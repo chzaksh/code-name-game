@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './utils/App.css';
 import initialCards from './utils/gameData.json';
-import { GAME_SETTINGS } from './utils/constants';
+
 
 // ייבוא הרכיבים החדשים שפיצלנו
 import IntroScreen from './components/IntroScreen';
