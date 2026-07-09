@@ -1,0 +1,711 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  --sidebar-bg: rgba(255, 255, 255, 0.05);
+  --card-front-bg: linear-gradient(145deg, #2a2a40, #1f1f33);
+  --card-front-hover: linear-gradient(145deg, #32324a, #26263c);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-cyan: #06b6d4;
+
+  --team-color: transparent;
+}
+
+/* ביטול הגבלות ה-width של תבנית הבסיס (Vite) לפריסה מלאה על כל המסך */
+#root {
+  max-width: 100% !important;
+  width: 100%;
+  padding: 0 !important;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.game-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  padding: 24px;
+  direction: rtl;
+  gap: 30px;
+}
+
+/* סרגל צד */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-section {
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* כותרת המשחק בסרגל הצד */
+.game-branding {
+  text-align: center;
+  padding: 15px;
+}
+
+.game-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* אזור הטיימר */
+.timer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.timer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.timer-icon {
+  width: 24px;
+  height: 24px;
+  stroke: var(--accent-cyan);
+}
+
+.timer-display {
+  font-family: monospace;
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 0 15px rgba(255,255,255,0.2);
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.timer-display.active {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* אזור ניקוד */
+.scores-section {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.scores-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 10px;
+}
+
+.scores-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.scores-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.team-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-right: 5px solid var(--team-color);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.team-box:hover {
+  background: rgba(0, 0, 0, 0.3);
+  transform: translateX(-5px);
+}
+
+.team-avatar-wrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.team-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 2;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+
+.team-avatar-fallback {
+  position: absolute;
+  inset: 0;
+  background: #334155;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  z-index: 1;
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.team-name {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.score-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--team-color);
+}
+
+/* כפתורים כלליים */
+.btn-primary, .btn-secondary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--accent-cyan);
+  color: #000;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+
+.btn-primary.pause {
+  background: #f59e0b;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+/* לוח המשחק */
+.main-board {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-25 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.game-card {
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transform-style: preserve-3d;
+}
+
+.game-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* חזית הכרטיס */
+.card-front {
+  background: var(--card-front-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.05);
+  transition: all 0.3s ease;
+}
+
+.card-front:hover {
+  background: var(--card-front-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.card-text {
+  font-size: clamp(14px, 2.2vh, 22px);
+  font-weight: 700;
+  text-align: center;
+  color: #e2e8f0;
+  line-height: 1.3;
+}
+
+/* גב הכרטיס */
+.card-back {
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid var(--team-color);
+  background: #111;
+}
+
+.card-back-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+}
+
+.card-back-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--team-color);
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+
+.card-back-content {
+  position: relative;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(5px);
+}
+
+.flipped-team-name {
+  font-size: clamp(14px, 2vh, 22px);
+  font-weight: bold;
+  color: white;
+}
+
+/* פופ-אפים מודרניים */
+.custom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.custom-modal {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+.custom-modal h3 {
+  margin-top: 0;
+  color: var(--accent-cyan);
+  font-size: 22px;
+}
+
+.custom-modal p {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin: 20px 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+}
+
+/* נגן וידאו מסך מלא */
+.video-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.video-wrapper-inner {
+  width: 85%;
+  max-width: 1050px;
+  position: relative;
+}
+
+video {
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 0 0 50px rgba(0,0,0,0.8);
+}
+
+.skip-btn {
+  position: absolute;
+  bottom: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.mute-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* =========================================
+   מסך הוראות וקרוסלה מודרנית (Intro Screen)
+   ========================================= */
+
+.intro-screen-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-gradient);
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  direction: rtl;
+  backdrop-filter: blur(15px);
+}
+
+.intro-screen-content {
+  background: rgba(20, 20, 35, 0.75);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02);
+  max-width: 950px;
+  width: 95%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-header {
+  margin-bottom: 5px;
+}
+
+.intro-title {
+  font-size: 46px;
+  font-weight: 900;
+  margin: 0 0 5px 0;
+  background: linear-gradient(135deg, #ffffff 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+}
+
+.intro-subtitle {
+  color: var(--text-muted);
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* קרוסלה */
+.modern-carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.modern-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  backdrop-filter: blur(5px);
+}
+
+/* מיקום מדויק של החצים מחוץ לתוכן */
+.modern-carousel-arrow.right-arrow { right: -28px; }
+.modern-carousel-arrow.left-arrow { left: -28px; }
+
+.modern-carousel-arrow:hover:not(:disabled) {
+  background: var(--accent-cyan);
+  color: #000;
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+}
+
+.modern-carousel-arrow:disabled {
+  opacity: 0.15;
+  cursor: default;
+}
+
+/* כרטיס השקופית - מתוכנן לתמוך בטקסט למעלה ותמונה למטה */
+.modern-carousel-slide {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0 45px; /* מפנה מקום לחצים */
+  min-height: 480px;
+}
+
+/* אזור הטקסט (למעלה) */
+.slide-text-content {
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.slide-icon-badge {
+  font-size: 36px;
+  margin-bottom: 15px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 2px solid var(--accent-cyan);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.slide-text-content h2 {
+  color: var(--accent-cyan);
+  font-size: 28px;
+  margin: 0 0 10px 0;
+  font-weight: 800;
+}
+
+.slide-text-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  margin: 0;
+  max-width: 650px;
+}
+
+/* אזור התמונה (למטה) */
+.slide-image-wrapper {
+  flex-grow: 1;
+  width: 100%;
+  min-height: 220px;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  transition: opacity 0.3s;
+}
+
+.modern-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.modern-carousel-dots .dot {
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.modern-carousel-dots .dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.modern-carousel-dots .dot.active {
+  background: var(--accent-cyan);
+  transform: scale(1.4);
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+/* אזור כפתורים (דלג / התחל משחק) */
+.intro-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+.btn-start-massive {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  color: #000;
+  border: none;
+  padding: 16px 50px;
+  border-radius: 50px;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
+  transition: all 0.3s;
+  animation: startPulse 2s infinite;
+}
+
+.btn-start-massive:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(6, 182, 212, 0.6);
+}
+
+/* עיצוב חדש ומודרני לכפתור דלג */
+.btn-skip {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 35px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn-skip:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes startPulse {
+  0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+  70% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
