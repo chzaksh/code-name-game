@@ -1,16 +1,69 @@
-# React + Vite
+# 🕵️‍♂️ שם קוד // המהדורה המשפחתית (Family Codenames)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ברוכים הבאים לפרויקט "שם קוד - המהדורה המשפחתית"!  
+זהו משחק לוח אינטראקטיבי שנועד לשדרוג ערבי משפחה. המשחק שואב השראה ממשחק הקופסה המוכר "שם קוד", אך משלב טוויסט מיוחד: מאחורי הכרטיסים מסתתרים סרטונים ותמונות אישיות שמופעלים מיד עם חשיפתם.
 
-Currently, two official plugins are available:
+## ✨ פיצ'רים מרכזיים
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **לוח משחק חכם:** 25 כרטיסים דינמיים המקושרים לקבוצות, עם חשיפה ויזואלית ונגן וידאו מובנה.
+- **עמידות בפני רענונים (State Persistence):** התקדמות המשחק נשמרת אוטומטית בדפדפן (LocalStorage). אם העמוד רוענן בטעות – שום דבר לא הולך לאיבוד.
+- **מערכת טיימר וסאונד:** טיימר מובנה בסרגל הצד הכולל מוזיקת רקע, תקתוק שמאיץ ב־10 השניות האחרונות, ואפקטים קוליים בסיום התור.
+- **קוד נקי ומאורגן:** הפרדה מלאה לקומפוננטות React וניהול טקסטים מקובץ `uiTexts.js` מרכזי אחד לתחזוקה נוחה.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 דרישות קדם להפעלה (Prerequisites)
 
-## Expanding the ESLint configuration
+כדי להריץ את הפרויקט על המחשב שלך, ודא שהתוכנות הבאות מותקנות:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Git** – למשיכת הקוד.
+2. **Node.js** – כולל `npm`.
+
+---
+
+## 🛠️ התקנה והרצה (Installation & Setup)
+
+### 1. שכפול הפרויקט (Clone)
+
+```bash
+git clone https://github.com/chzaksh/code-name-game.git
+```
+
+### 2. כניסה לתיקיית הפרויקט
+
+```bash
+cd code-name-game
+```
+
+### 3. התקנת התלויות
+
+```bash
+npm install
+```
+
+### 4. הפעלת המשחק
+
+**אפשרות א' (מומלץ ל-Windows):**  
+הפעל את הקובץ `StartGame.bat`.
+
+**אפשרות ב' (דרך הטרמינל):**
+
+```bash
+npm run dev
+```
+
+לאחר מכן פתח את הכתובת שתופיע בטרמינל (בדרך כלל `http://localhost:5173`).
+
+---
+
+## ⚙️ התאמה אישית (Customization)
+
+ערוך את הקבצים בתיקייה `src/utils`:
+
+- **gameData.json** – מילות הקוד, שיוך לקבוצות ונתיבי הסרטונים.
+- **uiTexts.js** – כל הטקסטים של ממשק המשתמש.
+- **constants.js** – הגדרות כלליות כגון שמות קבוצות, צבעים וזמן הטיימר.
+
+---
+
+תיהנו ושחקו בהגינות! 🎯
