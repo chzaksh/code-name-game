@@ -7,8 +7,9 @@ import initialCards from './utils/gameData.json';
 import IntroScreen from './components/IntroScreen';
 import Sidebar from './components/Sidebar';
 import GameBoard from './components/GameBoard';
-import { ConfirmModal, AlertModal, RestartModal, VideoModal } from './components/Modals';
+import { ConfirmModal, AlertModal, RestartModal, VideoModal, VictoryModal } from './components/Modals';
 import {UI_TEXTS} from "./utils/uiTexts.js";
+import {TEAMS} from "./utils/constants.js";
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
@@ -21,6 +22,8 @@ function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [winningTeam, setWinningTeam] = useState(null);
+  const [hasCelebrated, setHasCelebrated] = useState(false);
 
   // מצבי פופ-אפים
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, card: null });
@@ -30,6 +33,7 @@ function App() {
   const bgAudioRef = useRef(null);
   const tickingAudioRef = useRef(null);
   const alarmAudioRef = useRef(null);
+  const victoryAudioRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem('family_codenames_cards', JSON.stringify(cards));
@@ -45,6 +49,32 @@ function App() {
       }
     }
   }, [activeVideo, isMuted, showIntro]);
+  // בדיקת ניצחון אוטומטית אחרי כל שינוי בכרטיסים
+  useEffect(() => {
+    if (showIntro || winningTeam || hasCelebrated) return;
+
+    // בודק את כל 3 הקבוצות
+    const teamsToCheck = ['team1', 'team2', 'team3'];
+    
+    for (const teamId of teamsToCheck) {
+      const teamCards = cards.filter(c => c.team === teamId);
+      // אם לקבוצה יש כרטיסים על הלוח וכולם הפוכים - היא ניצחה!
+      if (teamCards.length > 0 && teamCards.every(c => c.isFlipped)) {
+        // מציאת אובייקט הקבוצה מתוך TEAMS (בהנחה שייבאת אותו מ-constants)
+        const theWinningTeam = Object.values(TEAMS).find(t => t.id === teamId);
+        
+        setWinningTeam(theWinningTeam);
+        setIsTimerActive(false); // עוצרים את השעון
+        
+        if (!isMuted && victoryAudioRef.current) {
+          if (bgAudioRef.current) bgAudioRef.current.pause(); // משתיקים מוזיקת רקע
+          victoryAudioRef.current.currentTime = 0;
+          victoryAudioRef.current.play().catch(() => {});
+        }
+        break;
+      }
+    }
+  }, [cards, showIntro, winningTeam, isMuted]);
 
   useEffect(() => {
     let interval = null;
@@ -96,6 +126,12 @@ function App() {
     setTimeLeft(0);
   };
 
+  const handleContinuePlaying = () => {
+    setWinningTeam(null);
+    setHasCelebrated(true); 
+    if (victoryAudioRef.current) victoryAudioRef.current.pause(); // משתיק את שירי הניצחון
+  };
+
   const getRemainingCount = (teamKey) => cards.filter(c => c.team === teamKey && !c.isFlipped).length;
 
 
@@ -129,7 +165,10 @@ function App() {
       localStorage.removeItem('family_codenames_cards');
       setCards(initialCards);
       resetTimer();
+      setWinningTeam(null);
+      setHasCelebrated(false);
       setShowIntro(true);
+      if (victoryAudioRef.current) victoryAudioRef.current.pause();
     }
   };
 
@@ -163,6 +202,11 @@ function App() {
         <ConfirmModal isOpen={confirmModal.isOpen} card={confirmModal.card} onConfirm={handleConfirmAction} />
         <AlertModal isOpen={alertModal.isOpen} text={alertModal.text} onClose={() => setAlertModal({ isOpen: false, text: '' })} />
         <RestartModal isOpen={restartModalOpen} onConfirm={confirmRestartAction} />
+        <VictoryModal 
+           team={winningTeam} 
+           onRestart={() => confirmRestartAction(true)} 
+           onContinue={handleContinuePlaying} 
+        />
       </div>
   );
 }

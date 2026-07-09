@@ -1,5 +1,7 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 :root {
@@ -10,11 +12,9 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --accent-cyan: #06b6d4;
-
   --team-color: transparent;
 }
 
-/* ביטול הגבלות ה-width של תבנית הבסיס (Vite) לפריסה מלאה על כל המסך */
 #root {
   max-width: 100% !important;
   width: 100%;
@@ -31,53 +31,87 @@ body {
   height: 100vh;
 }
 
+/* =========================================
+   מבנה העמוד והרספונסיביות
+   ========================================= */
 .game-wrapper {
-  display: flex;
-  height: 100vh;
   width: 100vw;
-  padding: 24px;
-  direction: rtl;
-  gap: 30px;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; 
 }
 
-/* סרגל צד */
+.game-wrapper-inner {
+  display: flex;
+  width: 100%;
+  height: 100%; 
+  padding: clamp(10px, 2vh, 20px);
+  direction: rtl;
+  gap: clamp(15px, 2vw, 25px);
+  box-sizing: border-box;
+}
+
 .sidebar {
-  width: 320px;
+  width: clamp(240px, 22vw, 320px);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-self: flex-start;
+  overflow: hidden; /* חוסם סקרול לחלוטין */
+  gap: clamp(8px, 1.5vh, 20px);
+  height: 100%;
 }
 
+.main-board {
+  flex: 1;
+  display: flex;
+  align-items: center;     
+  justify-content: center; 
+  height: 100%; 
+  min-height: 0;
+  overflow: hidden;
+}
+
+.grid-25 {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* 8 עמודות */
+  grid-template-rows: repeat(4, 1fr);    /* 4 שורות */
+  gap: 1.5vh; 
+  width: 100%;
+  height: 100%; 
+}
+
+/* =========================================
+   עיצוב רכיבים (סיידבר דינמי מתכווץ)
+   ========================================= */
 .sidebar-section {
   background: var(--sidebar-bg);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
-  padding: 24px;
+  padding: clamp(12px, 2vh, 24px);
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
 }
 
-/* כותרת המשחק בסרגל הצד */
 .game-branding {
   text-align: center;
-  padding: 15px;
+  padding: clamp(8px, 1.5vh, 15px);
 }
 
 .game-title {
   margin: 0;
-  font-size: 26px;
+  font-size: clamp(20px, 3vh, 26px);
   font-weight: 800;
   color: #fff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* אזור הטיימר */
 .timer-section {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: clamp(8px, 1.5vh, 15px);
 }
 
 .timer-header {
@@ -97,7 +131,7 @@ body {
 
 .timer-display {
   font-family: monospace;
-  font-size: 48px;
+  font-size: clamp(36px, 6vh, 48px);
   font-weight: 900;
   letter-spacing: 2px;
   text-shadow: 0 0 15px rgba(255,255,255,0.2);
@@ -115,20 +149,17 @@ body {
   width: 100%;
 }
 
-/* אזור ניקוד */
 .scores-section {
   flex-grow: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .scores-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: clamp(10px, 1.5vh, 20px);
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  padding-bottom: 10px;
+  padding-bottom: clamp(5px, 1vh, 10px);
 }
 
 .scores-header h2 {
@@ -139,14 +170,14 @@ body {
 .scores-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 1.5vh, 12px);
 }
 
 .team-box {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 12px;
+  padding: clamp(8px, 1.5vh, 12px);
   border-right: 5px solid var(--team-color);
   border-radius: 16px;
   background: rgba(0, 0, 0, 0.2);
@@ -160,8 +191,8 @@ body {
 
 .team-avatar-wrapper {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: clamp(38px, 5vh, 48px);
+  height: clamp(38px, 5vh, 48px);
 }
 
 .team-img {
@@ -200,15 +231,17 @@ body {
 }
 
 .score-val {
-  font-size: 28px;
+  font-size: clamp(22px, 4vh, 28px);
   font-weight: 900;
   color: var(--team-color);
 }
 
-/* כפתורים כלליים */
+/* =========================================
+   כפתורים
+   ========================================= */
 .btn-primary, .btn-secondary {
   flex: 1;
-  padding: 12px;
+  padding: clamp(10px, 1.5vh, 12px);
   border-radius: 12px;
   font-size: 14px;
   font-weight: bold;
@@ -240,7 +273,7 @@ body {
 
 .btn-danger {
   width: 100%;
-  padding: 12px;
+  padding: clamp(10px, 1.5vh, 12px);
   border-radius: 12px;
   font-size: 14px;
   font-weight: bold;
@@ -249,6 +282,7 @@ body {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   transition: all 0.2s;
+  margin-top: auto; /* דוחף את כפתור האיפוס תמיד לתחתית הסיידבר */
 }
 
 .btn-danger:hover {
@@ -258,34 +292,9 @@ body {
   transform: translateY(-2px);
 }
 
-/* לוח המשחק */
-.main-board {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.grid-25 {
-  /*display: grid;*/
-  /*grid-template-columns: repeat(5, 1fr);*/
-  /*grid-template-rows: repeat(5, 1fr);*/
-  /*gap: 20px;*/
-  /*width: 100%;*/
-  /*height: 100%;*/
-  display: grid;
-
-  /* עמודות גמישות: הדפדפן יחשב אוטומטית כמה כרטיסים נכנסים ברוחב (מינימום 150 פיקסלים לכרטיס) וימתח אותם שווה בשווה */
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-
-  /* שורות גמישות: כל השורות שיווצרו יתחלקו בצורה שווה לחלוטין בגובה הפנוי של המסך (1fr) */
-  grid-auto-rows: 1fr;
-
-  gap: 15px; /* מרווח קבוע ונקי בין הכרטיסים */
-  width: 100%;
-  height: 100%;
-}
-
+/* =========================================
+   כרטיסים ומשחק
+   ========================================= */
 .game-card {
   perspective: 1000px;
   cursor: pointer;
@@ -312,7 +321,6 @@ body {
   overflow: hidden;
 }
 
-/* חזית הכרטיס */
 .card-front {
   background: var(--card-front-bg);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -339,7 +347,6 @@ body {
   line-height: 1.3;
 }
 
-/* גב הכרטיס */
 .card-back {
   transform: rotateY(180deg);
   display: flex;
@@ -380,7 +387,9 @@ body {
   color: white;
 }
 
-/* פופ-אפים מודרניים */
+/* =========================================
+   מודאלים וסרטונים
+   ========================================= */
 .custom-modal-overlay {
   position: fixed;
   inset: 0;
@@ -421,7 +430,6 @@ body {
   gap: 15px;
 }
 
-/* נגן וידאו מסך מלא */
 .video-modal {
   position: fixed;
   inset: 0;
@@ -444,19 +452,29 @@ video {
   box-shadow: 0 0 50px rgba(0,0,0,0.8);
 }
 
+/* כפתור הדילוג של הסרטון - מקובע לשמאל למעלה */
 .skip-btn {
   position: absolute;
-  bottom: -70px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #ef4444;
+  top: 15px;
+  left: 15px;
+  bottom: auto;
+  transform: none;
+  background: rgba(239, 68, 68, 0.9);
   color: white;
   border: none;
-  padding: 12px 35px;
+  padding: 10px 25px;
   border-radius: 30px;
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
+  z-index: 10000;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+
+.skip-btn:hover {
+  background: #ef4444;
+  transform: scale(1.05);
 }
 
 .mute-btn {
@@ -467,9 +485,8 @@ video {
 }
 
 /* =========================================
-   מסך הוראות וקרוסלה מודרנית (Intro Screen)
+   מסך הוראות (פתיח) ללא גלילה
    ========================================= */
-
 .intro-screen-overlay {
   position: fixed;
   inset: 0;
@@ -480,30 +497,35 @@ video {
   align-items: center;
   direction: rtl;
   backdrop-filter: blur(15px);
+  padding: 20px;
 }
 
 .intro-screen-content {
   background: rgba(20, 20, 35, 0.75);
   backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 40px;
+  padding: clamp(20px, 4vh, 40px);
   border-radius: 30px;
   box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02);
   max-width: 950px;
-  width: 95%;
+  width: 100%;
+  height: 100%;
+  max-height: 95vh;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden; /* מונע סקרול במסך ההוראות */
 }
 
 .intro-header {
   margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
 .intro-title {
-  font-size: 46px;
+  font-size: clamp(32px, 5vh, 46px);
   font-weight: 900;
   margin: 0 0 5px 0;
   background: linear-gradient(135deg, #ffffff 0%, #06b6d4 100%);
@@ -514,18 +536,18 @@ video {
 
 .intro-subtitle {
   color: var(--text-muted);
-  font-size: 20px;
+  font-size: clamp(16px, 2.5vh, 20px);
   margin: 0;
-  letter-spacing: 1px;
 }
 
-/* קרוסלה */
 .modern-carousel-container {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   width: 100%;
+  min-height: 0; /* קריטי כדי שיסכים להתכווץ */
 }
 
 .modern-carousel-arrow {
@@ -535,35 +557,20 @@ video {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: white;
-  width: 56px;
-  height: 56px;
+  width: clamp(40px, 6vh, 56px);
+  height: clamp(40px, 6vh, 56px);
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s;
   z-index: 10;
-  backdrop-filter: blur(5px);
 }
 
-/* מיקום מדויק של החצים מחוץ לתוכן */
-.modern-carousel-arrow.right-arrow { right: -28px; }
-.modern-carousel-arrow.left-arrow { left: -28px; }
+.modern-carousel-arrow.right-arrow { right: -20px; }
+.modern-carousel-arrow.left-arrow { left: -20px; }
 
-.modern-carousel-arrow:hover:not(:disabled) {
-  background: var(--accent-cyan);
-  color: #000;
-  transform: translateY(-50%) scale(1.15);
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-}
-
-.modern-carousel-arrow:disabled {
-  opacity: 0.15;
-  cursor: default;
-}
-
-/* כרטיס השקופית - מתוכנן לתמוך בטקסט למעלה ותמונה למטה */
 .modern-carousel-slide {
   flex: 1;
   background: rgba(0, 0, 0, 0.3);
@@ -572,13 +579,12 @@ video {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin: 0 45px; /* מפנה מקום לחצים */
-  min-height: 480px;
+  margin: 0 40px; 
+  height: 100%;
 }
 
-/* אזור הטקסט (למעלה) */
 .slide-text-content {
-  padding: 30px 40px;
+  padding: clamp(15px, 3vh, 30px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -587,86 +593,74 @@ video {
 }
 
 .slide-icon-badge {
-  font-size: 36px;
-  margin-bottom: 15px;
+  font-size: clamp(24px, 4vh, 36px);
+  margin-bottom: 10px;
   background: rgba(6, 182, 212, 0.15);
   border: 2px solid var(--accent-cyan);
-  width: 70px;
-  height: 70px;
+  width: clamp(50px, 8vh, 70px);
+  height: clamp(50px, 8vh, 70px);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .slide-text-content h2 {
   color: var(--accent-cyan);
-  font-size: 28px;
+  font-size: clamp(20px, 3vh, 28px);
   margin: 0 0 10px 0;
-  font-weight: 800;
 }
 
 .slide-text-content p {
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: clamp(14px, 2vh, 18px);
+  line-height: 1.4;
   color: #e2e8f0;
   margin: 0;
-  max-width: 650px;
 }
 
-/* אזור התמונה (למטה) */
 .slide-image-wrapper {
   flex-grow: 1;
   width: 100%;
-  min-height: 220px;
+  min-height: 0; /* נותן לתמונה להתכווץ ללא גלילה */
   background: rgba(0,0,0,0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
 .slide-image {
   width: 100%;
   height: 100%;
-  max-height: 250px;
   object-fit: cover;
-  transition: opacity 0.3s;
 }
 
 .modern-carousel-dots {
   display: flex;
   justify-content: center;
   gap: 12px;
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  flex-shrink: 0;
 }
 
 .modern-carousel-dots .dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  transition: all 0.3s;
-  cursor: pointer;
-}
-
-.modern-carousel-dots .dot:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
 
 .modern-carousel-dots .dot.active {
   background: var(--accent-cyan);
   transform: scale(1.4);
-  box-shadow: 0 0 10px var(--accent-cyan);
 }
 
-/* אזור כפתורים (דלג / התחל משחק) */
 .intro-actions {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   min-height: 60px;
 }
 
@@ -674,49 +668,106 @@ video {
   background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
   color: #000;
   border: none;
-  padding: 16px 50px;
+  padding: clamp(12px, 2vh, 16px) clamp(30px, 4vw, 50px);
   border-radius: 50px;
-  font-size: 22px;
+  font-size: clamp(18px, 2.5vh, 22px);
   font-weight: 900;
   cursor: pointer;
   box-shadow: 0 10px 30px rgba(6, 182, 212, 0.4);
-  transition: all 0.3s;
-  animation: startPulse 2s infinite;
 }
 
-.btn-start-massive:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(6, 182, 212, 0.6);
-}
-
-/* עיצוב חדש ומודרני לכפתור דלג */
 .btn-skip {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-main);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 35px;
+  padding: clamp(10px, 1.5vh, 12px) clamp(20px, 3vw, 35px);
   border-radius: 50px;
-  font-size: 18px;
+  font-size: clamp(14px, 2vh, 18px);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.btn-skip:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-@keyframes startPulse {
-  0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
-  70% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
 }
 
 @keyframes slideUpFade {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   מודאל ניצחון
+   ========================================= */
+.victory-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200000;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.victory-content {
+  background: linear-gradient(145deg, rgba(30, 30, 50, 0.9), rgba(15, 15, 25, 0.95));
+  border: 3px solid var(--team-color);
+  border-radius: 40px;
+  padding: 50px;
+  text-align: center;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.8), inset 0 0 30px var(--team-color);
+  max-width: 800px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.victory-title {
+  font-size: clamp(50px, 8vh, 80px);
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 5px 25px var(--team-color);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.victory-subtitle {
+  font-size: clamp(24px, 4vh, 36px);
+  color: var(--team-color);
+  margin: 0 0 20px 0;
+}
+
+.confetti-effect {
+  font-size: 80px;
+  animation: bounce 2s infinite;
+}
+
+.victory-media {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.victory-media video {
+  width: 100%;
+  display: block;
+}
+
+.victory-btn {
+  margin-top: 20px;
+  box-shadow: 0 0 30px var(--team-color) !important;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
 }
