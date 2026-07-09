@@ -8,5 +8,6 @@ export const TEAMS = {
 
 export const GAME_SETTINGS = {
     gameTitle: "שם קוד // המהדורה המשפחתית",
-    defaultTimerSeconds: 15 // שנה כאן את הזמן בשניות לכל תור (למשל 60 = דקה)
+    spymasterTimerSeconds: 90, // <--- שניות לרב-מרגלים
+    teamTimerSeconds: 180       // <--- שניות לקבוצה
 };

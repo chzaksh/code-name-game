@@ -19,7 +19,7 @@ function App() {
 
   const [activeVideo, setActiveVideo] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(GAME_SETTINGS.defaultTimerSeconds);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
 
   // מצבי פופ-אפים
@@ -82,12 +82,23 @@ function App() {
     return () => clearInterval(interval);
   }, [isTimerActive, timeLeft, isMuted]);
 
-  const getRemainingCount = (teamKey) => cards.filter(c => c.team === teamKey && !c.isFlipped).length;
-  const toggleTimer = () => setIsTimerActive(!isTimerActive);
+
+  const startTimer = (seconds) => {
+    setTimeLeft(seconds);
+    setIsTimerActive(true);
+  };
+
+  const pauseTimer = () => setIsTimerActive(false);
+  const resumeTimer = () => setIsTimerActive(true);
+
   const resetTimer = () => {
     setIsTimerActive(false);
-    setTimeLeft(GAME_SETTINGS.defaultTimerSeconds);
+    setTimeLeft(0);
   };
+
+  const getRemainingCount = (teamKey) => cards.filter(c => c.team === teamKey && !c.isFlipped).length;
+
+
 
   const handleCardClick = (card) => {
     if (card.isFlipped) return;
@@ -105,9 +116,7 @@ function App() {
 
   const handleVideoEnd = () => {
     setCards(cards.map(c => c.id === activeVideo.id ? { ...c, isFlipped: true } : c));
-    // if (activeVideo.team === 'bomb') {
-    //   setTimeout(() => setAlertModal({ isOpen: true, text: UI_TEXTS.modals.alertBombTriggered }), 400);
-    // }
+
     setActiveVideo(null);
     resetTimer();
   };
@@ -136,7 +145,9 @@ function App() {
           <Sidebar
               timeLeft={timeLeft}
               isTimerActive={isTimerActive}
-              toggleTimer={toggleTimer}
+              startTimer={startTimer}
+              pauseTimer={pauseTimer}
+              resumeTimer={resumeTimer}
               resetTimer={resetTimer}
               isMuted={isMuted}
               setIsMuted={setIsMuted}

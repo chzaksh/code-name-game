@@ -1,5 +1,5 @@
 [
-  { "id": 1, "text": "הטיול לאילת", "team": "team1", "videoUrl": "/videos/moshe_g.mp4", "imageUrl": "/images/cards/eilat.jpg" },
+  { "id": 1, "text": "הטיול לאילת", "team": "team1", "videoUrl": "/videos/moshe_g.mp4", "imageUrl": "/images/moshe_g.png" },
   { "id": 2, "text": "הפדיחה של אבא", "team": "team1", "videoUrl": "/videos/dad.mp4", "imageUrl": "/images/cards/dad.jpg" },
   { "id": 3, "text": "המנגל ביום העצמאות", "team": "team2", "videoUrl": "/videos/bbq.mp4", "imageUrl": "/images/cards/bbq.jpg" },
   { "id": 4, "text": "הבר מצווה של עומר", "team": "team2", "videoUrl": "/videos/bar.mp4", "imageUrl": "/images/cards/bar.jpg" },
@@ -23,5 +23,12 @@
   { "id": 22, "text": "הפדיחה של אבא", "team": "team1", "videoUrl": "/videos/dad.mp4", "imageUrl": "/images/cards/dad.jpg" },
   { "id": 23, "text": "המנגל ביום העצמאות", "team": "team2", "videoUrl": "/videos/bbq.mp4", "imageUrl": "/images/cards/bbq.jpg" },
   { "id": 24, "text": "הבר מצווה של עומר", "team": "team2", "videoUrl": "/videos/bar.mp4", "imageUrl": "/images/cards/bar.jpg" },
-  { "id": 25, "text": "החצר של סבא", "team": "team3", "videoUrl": "/videos/grandpa.mp4", "imageUrl": "/images/cards/grandpa.jpg" }
+  { "id": 25, "text": "החצר של סבא", "team": "team3", "videoUrl": "/videos/grandpa.mp4", "imageUrl": "/images/cards/grandpa.jpg" },
+  { "id": 26, "text": "הטיול לאילת", "team": "team1", "videoUrl": "/videos/eilat.mp4", "imageUrl": "/images/cards/eilat.jpg" },
+  { "id": 27, "text": "הפדיחה של אבא", "team": "team1", "videoUrl": "/videos/dad.mp4", "imageUrl": "/images/cards/dad.jpg" },
+  { "id": 28, "text": "המנגל ביום העצמאות", "team": "team2", "videoUrl": "/videos/bbq.mp4", "imageUrl": "/images/cards/bbq.jpg" },
+  { "id": 29, "text": "הבר מצווה של עומר", "team": "team2", "videoUrl": "/videos/bar.mp4", "imageUrl": "/images/cards/bar.jpg" },
+  { "id": 30, "text": "החצר של סבא", "team": "team3", "videoUrl": "/videos/grandpa.mp4", "imageUrl": "/images/cards/grandpa.jpg" },
+  { "id": 31, "text": "הבר מצווה של עומר", "team": "team2", "videoUrl": "/videos/bar.mp4", "imageUrl": "/images/cards/bar.jpg" },
+  { "id": 32, "text": "החצר של סבא", "team": "team3", "videoUrl": "/videos/grandpa.mp4", "imageUrl": "/images/cards/grandpa.jpg" }
 ]

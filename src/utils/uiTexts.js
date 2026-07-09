@@ -45,8 +45,10 @@ export const UI_TEXTS = {
     // סרגל צד
     sidebar: {
         timerLabel: "זמן לשחקן",
+        timerSpymaster: "רב-מרגלים",
+        timerTeam: "קבוצה",
         timerPause: "השהה",
-        timerPlay: "הפעל טיימר",
+        timerResume: "המשך",
         timerReset: "איפוס",
         scoresTitle: "מצב נקודות",
         btnNewGame: "🔄 משחק חדש"

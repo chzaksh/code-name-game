@@ -2,7 +2,16 @@ import { TEAMS, GAME_SETTINGS } from '../utils/constants';
 import { UI_TEXTS } from '../utils/uiTexts';
 
 export default function Sidebar({
-                                    timeLeft, isTimerActive, toggleTimer, resetTimer, isMuted, setIsMuted, getRemainingCount, handleRestartGameClick
+                                    timeLeft,
+                                    isTimerActive,
+                                    startTimer,
+                                    pauseTimer,
+                                    resumeTimer,
+                                    resetTimer,
+                                    isMuted,
+                                    setIsMuted,
+                                    getRemainingCount,
+                                    handleRestartGameClick
                                 }) {
     const t = UI_TEXTS.sidebar;
 
@@ -10,6 +19,50 @@ export default function Sidebar({
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    // פונקציה מסודרת שמחזירה את הכפתורים הנכונים ומעלימה את האזהרה של העורך (ESLint)
+    const renderTimerControls = () => {
+        if (isTimerActive) {
+            // מצב שהטיימר רץ עכשיו
+            return (
+                <>
+                    <button className="btn-primary pause" onClick={pauseTimer}>{t.timerPause}</button>
+                    <button className="btn-secondary" onClick={resetTimer}>{t.timerReset}</button>
+                </>
+            );
+        }
+
+        if (timeLeft > 0) {
+            // מצב שהטיימר הופסק באמצע (השהיה)
+            return (
+                <>
+                    <button className="btn-primary play" onClick={resumeTimer}>{t.timerResume}</button>
+                    <button className="btn-secondary" onClick={resetTimer}>{t.timerReset}</button>
+                </>
+            );
+        }
+
+        // מצב התחלתי / מאופס - מציג את שני סוגי הטיימרים
+        return (
+            <>
+                <button
+                    className="btn-primary"
+                    style={{ background: '#f43f5e', color: '#fff', fontSize: '13px' }}
+                    onClick={() => startTimer(GAME_SETTINGS.spymasterTimerSeconds)}
+                >
+                    {t.timerSpymaster}
+                </button>
+
+                <button
+                    className="btn-primary"
+                    style={{ background: '#10b981', color: '#fff', fontSize: '13px' }}
+                    onClick={() => startTimer(GAME_SETTINGS.teamTimerSeconds)}
+                >
+                    {t.timerTeam}
+                </button>
+            </>
+        );
     };
 
     return (
@@ -31,11 +84,9 @@ export default function Sidebar({
                     {formatTime(timeLeft)}
                 </div>
 
-                <div className="timer-controls">
-                    <button className={`btn-primary ${isTimerActive ? 'pause' : 'play'}`} onClick={toggleTimer}>
-                        {isTimerActive ? t.timerPause : t.timerPlay}
-                    </button>
-                    <button className="btn-secondary" onClick={resetTimer}>{t.timerReset}</button>
+                {/* קריאה לפונקציה החדשה שתציג את הכפתורים */}
+                <div className="timer-controls" style={{ flexWrap: 'wrap', gap: '8px' }}>
+                    {renderTimerControls()}
                 </div>
             </div>
 
