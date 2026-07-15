@@ -11,7 +11,12 @@ export default function Sidebar({
                                     isMuted,
                                     setIsMuted,
                                     getRemainingCount,
-                                    handleRestartGameClick
+                                    handleRestartGameClick,
+                                    currentTurn,
+                                    nextTurn,
+                                    theme,
+                                    toggleTheme,
+                                    openMapModal
                                 }) {
     const t = UI_TEXTS.sidebar;
 
@@ -21,10 +26,8 @@ export default function Sidebar({
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // פונקציה מסודרת שמחזירה את הכפתורים הנכונים ומעלימה את האזהרה של העורך (ESLint)
     const renderTimerControls = () => {
         if (isTimerActive) {
-            // מצב שהטיימר רץ עכשיו
             return (
                 <>
                     <button className="btn-primary pause" onClick={pauseTimer}>{t.timerPause}</button>
@@ -34,7 +37,6 @@ export default function Sidebar({
         }
 
         if (timeLeft > 0) {
-            // מצב שהטיימר הופסק באמצע (השהיה)
             return (
                 <>
                     <button className="btn-primary play" onClick={resumeTimer}>{t.timerResume}</button>
@@ -43,13 +45,13 @@ export default function Sidebar({
             );
         }
 
-        // מצב התחלתי / מאופס - מציג את שני סוגי הטיימרים
         return (
             <>
                 <button
                     className="btn-primary"
                     style={{ background: '#f43f5e', color: '#fff', fontSize: '13px' }}
-                    onClick={() => startTimer(GAME_SETTINGS.spymasterTimerSeconds)}
+                    // מעבירים את סוג הטיימר כפרמטר שני
+                    onClick={() => startTimer(GAME_SETTINGS.spymasterTimerSeconds, 'spymaster')}
                 >
                     {t.timerSpymaster}
                 </button>
@@ -57,7 +59,8 @@ export default function Sidebar({
                 <button
                     className="btn-primary"
                     style={{ background: '#10b981', color: '#fff', fontSize: '13px' }}
-                    onClick={() => startTimer(GAME_SETTINGS.teamTimerSeconds)}
+                    // מעבירים את סוג הטיימר כפרמטר שני
+                    onClick={() => startTimer(GAME_SETTINGS.teamTimerSeconds, 'team')}
                 >
                     {t.timerTeam}
                 </button>
@@ -84,37 +87,87 @@ export default function Sidebar({
                     {formatTime(timeLeft)}
                 </div>
 
-                {/* קריאה לפונקציה החדשה שתציג את הכפתורים */}
                 <div className="timer-controls" style={{ flexWrap: 'wrap', gap: '8px' }}>
                     {renderTimerControls()}
                 </div>
+                
+                {/* כפתור העברת תור ידני (למקרה שלא מצליחים לנחש ורוצים להעביר) */}
+                <button className="btn-end-turn" onClick={nextTurn}>
+                    סיום תור והעברה
+                </button>
             </div>
 
             <div className="sidebar-section scores-section">
                 <div className="scores-header">
                     <h2>{t.scoresTitle}</h2>
-                    <button className="mute-btn" onClick={() => setIsMuted(!isMuted)}>{isMuted ? '🔇' : '🔊'}</button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button 
+                            className="mute-btn" 
+                            onClick={toggleTheme} 
+                            title="שנה עיצוב"
+                        >
+                            {theme === 'dark' ? '☀️' : '🌙'}
+                        </button>
+                        <button 
+                            className="mute-btn" 
+                            onClick={() => setIsMuted(!isMuted)}
+                        >
+                            {isMuted ? '🔇' : '🔊'}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="scores-container">
-                    {[TEAMS.team1, TEAMS.team2, TEAMS.team3].map(team => (
-                        <div key={team.id} className="team-box" style={{ '--team-color': team.color }}>
-                            <div className="team-avatar-wrapper">
-                                <img src={`/images/${team.id}.png`} alt="" className="team-img" onError={(e) => { e.target.style.display = 'none'; }} />
-                                <span className="team-avatar-fallback">{team.name[0]}</span>
+                    {[TEAMS.team1, TEAMS.team2, TEAMS.team3].map(team => {
+                        const isCurrentTurn = team.id === currentTurn;
+                        
+                        return (
+                            // שימוש בקלאס ה-CSS שיצרנו
+                            <div 
+                                key={team.id} 
+                                className={`team-box ${isCurrentTurn ? 'active-turn' : ''}`} 
+                                style={{ '--team-color': team.color }}
+                            >
+                                <div className="team-avatar-wrapper">
+                                    <img src={`/images/${team.id}.png`} alt="" className="team-img" onError={(e) => { e.target.style.display = 'none'; }} />
+                                    <span className="team-avatar-fallback">{team.name[0]}</span>
+                                </div>
+                                <div className="team-info">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                        <span className="team-name">{team.name}</span>
+                                        {isCurrentTurn && <span className="current-turn-badge">התור שלנו</span>}
+                                    </div>
+                                    <span className="score-val" style={{ display: 'block', marginTop: '2px' }}>
+                                        {getRemainingCount(team.id)}
+                                    </span>
+                                </div>
                             </div>
-                            <div className="team-info">
-                                <span className="team-name">{team.name}</span>
-                                <span className="score-val">{getRemainingCount(team.id)}</span>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
-                <button className="btn-danger" onClick={handleRestartGameClick} style={{ marginTop: '20px' }}>
-                    {t.btnNewGame}
-                </button>
-            </div>
+                
+           
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '15px' }}>
+                    <button 
+                        className="btn-secondary" 
+                        onClick={openMapModal} 
+                        style={{ flex: 1, margin: 0, padding: 'clamp(10px, 1.5vh, 12px)' }}
+                    >
+                        🗺️ הצג מפה
+                    </button>
+
+                    <button 
+                        className="btn-danger" 
+                        onClick={handleRestartGameClick} 
+                        style={{ flex: 1, margin: 0 }}
+                    >
+                        {t.btnNewGame}
+                    </button>
+                </div>
+
+           </div>
         </aside>
     );
 }

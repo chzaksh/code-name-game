@@ -15,6 +15,16 @@
   --team-color: transparent;
 }
 
+[data-theme="light"] {
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --sidebar-bg: rgba(255, 255, 255, 0.7);
+  --card-front-bg: linear-gradient(145deg, #ffffff, #f8fafc);
+  --card-front-hover: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --accent-cyan: #0284c7;
+}
+
 #root {
   max-width: 100% !important;
   width: 100%;
@@ -75,8 +85,8 @@ body {
 
 .grid-25 {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 8 עמודות */
-  grid-template-rows: repeat(4, 1fr);    /* 4 שורות */
+  grid-template-columns: repeat(8, 1fr); 
+  grid-template-rows: repeat(4, 1fr);   
   gap: 1.5vh; 
   width: 100%;
   height: 100%; 
@@ -101,12 +111,14 @@ body {
   padding: clamp(8px, 1.5vh, 15px);
 }
 
+
 .game-title {
   margin: 0;
   font-size: clamp(20px, 3vh, 26px);
   font-weight: 800;
   color: #fff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+   color: var(--text-main);
 }
 
 .timer-section {
@@ -345,15 +357,19 @@ body {
   text-align: center;
   color: #e2e8f0;
   line-height: 1.3;
+  color: var(--text-main);
 }
 
 .card-back {
-  transform: rotateY(180deg);
+ transform: rotateY(180deg);
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 3px solid var(--team-color);
+  /* הרחבנו את המסגרת מ-3 פיקסלים ל-8 פיקסלים */
+  border: 8px solid var(--team-color); 
   background: #111;
+  /* תוספת קטנה: הילה עדינה בצבע של הקבוצה שיוצאת החוצה ופנימה כדי להבליט את הכרטיס */
+  box-shadow: 0 0 15px var(--team-color), inset 0 0 10px rgba(0,0,0,0.5);
 }
 
 .card-back-img {
@@ -770,4 +786,97 @@ video {
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
+}
+
+/* =========================================
+   ניהול תור נוכחי
+   ========================================= */
+.team-box.active-turn {
+  border: 3px solid var(--team-color);
+  background: rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px var(--team-color);
+}
+
+.current-turn-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bold;
+  background: var(--team-color);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-end-turn {
+  background: #4b5563;
+  color: #fff;
+  width: 100%;
+  padding: clamp(10px, 1.5vh, 12px);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s;
+  margin-top: 15px;
+}
+
+.btn-end-turn:hover {
+  background: #374151;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+/* =========================================
+   תיקונים ספציפיים למצב המקרן (Light Theme)
+   ========================================= */
+
+/* הפיכת הרקע של תיבות הקבוצה ללבן נקי כדי שהצבעים יבלטו */
+[data-theme="light"] .team-box {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* התאמת התיבה של התור הנוכחי למצב הבהיר */
+[data-theme="light"] .team-box.active-turn {
+  background: #f8fafc;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* הכהיית המספרים (במיוחד הצהוב) והוספת צל עדין לקריאות מושלמת */
+[data-theme="light"] .score-val {
+  filter: brightness(0.8) contrast(1.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+/* התאמת הלוגו (תמונה או אות חלופית) למצב המקרן */
+[data-theme="light"] .team-img,
+[data-theme="light"] .team-avatar-fallback {
+  filter: brightness(0.8) contrast(1.2);
+  border: 2px solid rgba(0, 0, 0, 0.15); /* מסגרת כהה במקום הלבנה */
+}
+
+/* הוספת צללית שתעזור ללוגו לבלוט גם אם הוא בהיר מאוד */
+[data-theme="light"] .team-avatar-wrapper {
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+}
+/* תיקון ספציפי לאות של הקבוצה (Fallback) במצב מקרן */
+[data-theme="light"] .team-avatar-fallback {
+  background: #f1f5f9; /* רקע אפור בהיר ומרענן */
+  color: #0f172a; /* אות בצבע כהה וחזק */
+  filter: none; /* ביטול הפילטר המכהה שהוספנו קודם */
+  border: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+/* עיצוב כפתורים משניים (כמו כפתור איפוס השעון) למצב בהיר */
+[data-theme="light"] .btn-secondary {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-main);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-main);
 }

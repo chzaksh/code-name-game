@@ -1,39 +1,112 @@
 import { useState, useEffect, useRef } from 'react';
-import './utils/App.css';
+import './styles/App.css';
 import initialCards from './utils/gameData.json';
 
-
-// ייבוא הרכיבים החדשים שפיצלנו
+// ==========================================
+// 1. ייבוא רכיבי תצוגה ולוגיקה
+// ==========================================
 import IntroScreen from './components/IntroScreen';
 import Sidebar from './components/Sidebar';
 import GameBoard from './components/GameBoard';
-import { ConfirmModal, AlertModal, RestartModal, VideoModal, VictoryModal } from './components/Modals';
-import {UI_TEXTS} from "./utils/uiTexts.js";
-import {TEAMS} from "./utils/constants.js";
 
+// ייבוא המודאלים מהתיקייה החדשה (modals)
+import ConfirmModal from './components/modals/ConfirmModal';
+import AlertModal from './components/modals/AlertModal';
+import RestartModal from './components/modals/RestartModal';
+import VideoModal from './components/modals/VideoModal';
+import VictoryModal from './components/modals/VictoryModal';
+
+
+import { UI_TEXTS } from "./utils/uiTexts.js";
+import { TEAMS } from "./utils/constants.js";
+import { useGameTimer } from './hooks/useGameTimer';
+
+// ==========================================
+// 2. פונקציות עזר מחוץ לקומפוננטה
+// ==========================================
+const generateShuffledCards = (baseCards) => {
+  const teams = baseCards.map(c => c.team);
+  
+  // ערבוב הקבוצות
+  for (let i = teams.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [teams[i], teams[j]] = [teams[j], teams[i]];
+  }
+
+  const shuffledColorsCards = baseCards.map((card, index) => ({
+    ...card,
+    team: teams[index],
+    isFlipped: false
+  }));
+
+  // ערבוב המיקומים על הלוח
+  for (let i = shuffledColorsCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledColorsCards[i], shuffledColorsCards[j]] = [shuffledColorsCards[j], shuffledColorsCards[i]];
+  }
+
+  return shuffledColorsCards;
+};
+
+// ==========================================
+// 3. הקומפוננטה הראשית
+// ==========================================
 function App() {
+  // --- הגדרות משחק בסיסיות ---
+  const [theme, setTheme] = useState(() => localStorage.getItem('game_theme') || 'dark');
   const [showIntro, setShowIntro] = useState(true);
+
+  // --- ניהול הלוח והכרטיסים ---
   const [cards, setCards] = useState(() => {
     const savedCards = localStorage.getItem('family_codenames_cards');
-    return savedCards ? JSON.parse(savedCards) : initialCards;
+    return savedCards ? JSON.parse(savedCards) : generateShuffledCards(initialCards);
   });
 
-  const [activeVideo, setActiveVideo] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isTimerActive, setIsTimerActive] = useState(false);
+  // --- ניהול תורים וניצחון ---
+  const [currentTurn, setCurrentTurn] = useState(() => {
+    const playingTeams = ['team1', 'team2', 'team3'];
+    return playingTeams[Math.floor(Math.random() * playingTeams.length)];
+  });
   const [winningTeam, setWinningTeam] = useState(null);
   const [hasCelebrated, setHasCelebrated] = useState(false);
 
-  // מצבי פופ-אפים
+  // --- ניהול מדיה ומודאלים ---
+  const [activeVideo, setActiveVideo] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, card: null });
   const [alertModal, setAlertModal] = useState({ isOpen: false, text: '' });
   const [restartModalOpen, setRestartModalOpen] = useState(false);
 
+  // --- רפרנסים לסאונד הכללי ---
   const bgAudioRef = useRef(null);
-  const tickingAudioRef = useRef(null);
-  const alarmAudioRef = useRef(null);
   const victoryAudioRef = useRef(null);
+
+  // --- הוק הטיימר החיצוני ---
+  // כל הלוגיקה של הזמן מנוהלת בקובץ useGameTimer.js
+  const {
+    timeLeft,
+    isTimerActive,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    resetTimer,
+    tickingAudioRef,
+    alarmAudioRef
+  } = useGameTimer(isMuted, (timerType) => {
+    // קולבק שרץ כשהזמן בטיימר נגמר
+    if (timerType === 'team') nextTurn();
+    setAlertModal({ isOpen: true, text: UI_TEXTS.modals.alertTimerDone });
+  });
+
+  // ==========================================
+  // 4. פעולות אוטומטיות (Effects)
+  // ==========================================
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('game_theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     localStorage.setItem('family_codenames_cards', JSON.stringify(cards));
@@ -49,92 +122,47 @@ function App() {
       }
     }
   }, [activeVideo, isMuted, showIntro]);
-  // בדיקת ניצחון אוטומטית אחרי כל שינוי בכרטיסים
+
+  // בדיקת ניצחון בכל עדכון של הלוח
   useEffect(() => {
     if (showIntro || winningTeam || hasCelebrated) return;
 
-    // בודק את כל 3 הקבוצות
     const teamsToCheck = ['team1', 'team2', 'team3'];
-    
     for (const teamId of teamsToCheck) {
       const teamCards = cards.filter(c => c.team === teamId);
-      // אם לקבוצה יש כרטיסים על הלוח וכולם הפוכים - היא ניצחה!
+      
       if (teamCards.length > 0 && teamCards.every(c => c.isFlipped)) {
-        // מציאת אובייקט הקבוצה מתוך TEAMS (בהנחה שייבאת אותו מ-constants)
         const theWinningTeam = Object.values(TEAMS).find(t => t.id === teamId);
-        
         setWinningTeam(theWinningTeam);
-        setIsTimerActive(false); // עוצרים את השעון
+        pauseTimer(); // עוצר את השעון מההוק
         
         if (!isMuted && victoryAudioRef.current) {
-          if (bgAudioRef.current) bgAudioRef.current.pause(); // משתיקים מוזיקת רקע
+          if (bgAudioRef.current) bgAudioRef.current.pause();
           victoryAudioRef.current.currentTime = 0;
           victoryAudioRef.current.play().catch(() => {});
         }
         break;
       }
     }
-  }, [cards, showIntro, winningTeam, isMuted]);
+  }, [cards, showIntro, winningTeam, isMuted, pauseTimer]);
 
-  useEffect(() => {
-    let interval = null;
+  // ==========================================
+  // 5. פונקציות לניהול המשחק
+  // ==========================================
 
-    if (isTimerActive && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(prev => prev - 1);
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-        if (!isMuted && tickingAudioRef.current) {
-          tickingAudioRef.current.currentTime = 0;
-          tickingAudioRef.current.play().catch(() => {});
-
-          if (timeLeft <= 11) {
-            setTimeout(() => {
-              if (!isMuted && tickingAudioRef.current) {
-                tickingAudioRef.current.currentTime = 0;
-                tickingAudioRef.current.play().catch(() => {});
-              }
-            }, 500);
-          }
-        }
-      }, 1000);
-    } else if (timeLeft === 0 && isTimerActive) {
-      // התיקון: עטיפה ב-setTimeout שמונעת את קריסת הלינטר
-      setTimeout(() => {
-        setIsTimerActive(false);
-        if (!isMuted && alarmAudioRef.current) {
-          alarmAudioRef.current.currentTime = 0;
-          alarmAudioRef.current.play().catch(() => {});
-        }
-        setAlertModal({ isOpen: true, text: UI_TEXTS.modals.alertTimerDone });
-      }, 0);
-    }
-
-    return () => clearInterval(interval);
-  }, [isTimerActive, timeLeft, isMuted]);
-
-
-  const startTimer = (seconds) => {
-    setTimeLeft(seconds);
-    setIsTimerActive(true);
-  };
-
-  const pauseTimer = () => setIsTimerActive(false);
-  const resumeTimer = () => setIsTimerActive(true);
-
-  const resetTimer = () => {
-    setIsTimerActive(false);
-    setTimeLeft(0);
-  };
-
-  const handleContinuePlaying = () => {
-    setWinningTeam(null);
-    setHasCelebrated(true); 
-    if (victoryAudioRef.current) victoryAudioRef.current.pause(); // משתיק את שירי הניצחון
+  const nextTurn = () => {
+    if (!currentTurn) return;
+    const playingTeams = ['team1', 'team2', 'team3'];
+    const currentIndex = playingTeams.indexOf(currentTurn);
+    const nextIndex = (currentIndex + 1) % playingTeams.length; 
+    
+    setCurrentTurn(playingTeams[nextIndex]);
+    resetTimer();
   };
 
   const getRemainingCount = (teamKey) => cards.filter(c => c.team === teamKey && !c.isFlipped).length;
-
-
 
   const handleCardClick = (card) => {
     if (card.isFlipped) return;
@@ -146,15 +174,20 @@ function App() {
     setConfirmModal({ isOpen: false, card: null });
     if (isConfirmed && card) {
       setActiveVideo(card);
-      setIsTimerActive(false);
+      pauseTimer();
     }
   };
 
   const handleVideoEnd = () => {
     setCards(cards.map(c => c.id === activeVideo.id ? { ...c, isFlipped: true } : c));
-
     setActiveVideo(null);
     resetTimer();
+  };
+
+  const handleContinuePlaying = () => {
+    setWinningTeam(null);
+    setHasCelebrated(true); 
+    if (victoryAudioRef.current) victoryAudioRef.current.pause();
   };
 
   const handleRestartGameClick = () => setRestartModalOpen(true);
@@ -163,20 +196,35 @@ function App() {
     setRestartModalOpen(false);
     if (isConfirmed) {
       localStorage.removeItem('family_codenames_cards');
-      setCards(initialCards);
+      setCards(generateShuffledCards(initialCards));
       resetTimer();
       setWinningTeam(null);
       setHasCelebrated(false);
       setShowIntro(true);
       if (victoryAudioRef.current) victoryAudioRef.current.pause();
+      
+      const playingTeams = ['team1', 'team2', 'team3'];
+      setCurrentTurn(playingTeams[Math.floor(Math.random() * playingTeams.length)]);
     }
   };
 
+  const handleOpenMapWindow = () => {
+    // שומר על הנתיב הנוכחי ומוסיף לו את הדרישה למפה בלבד
+    const mapUrl = window.location.href.split('?')[0] + '?map=true';
+    // פותח חלון דפדפן אמיתי ונפרד
+    window.open(mapUrl, 'SpymasterMap', 'width=850,height=600,left=100,top=100');
+  };
+
+  // ==========================================
+  // 6. רינדור הממשק (UI)
+  // ==========================================
   return (
       <div className="game-wrapper">
+        {/* אלמנטים של אודיו */}
         <audio ref={bgAudioRef} src="/audio/bg-music.mp3" loop muted={isMuted} />
         <audio ref={tickingAudioRef} src="/audio/ticking.mp3" muted={isMuted} />
         <audio ref={alarmAudioRef} src="/audio/alarm.wav" muted={isMuted} />
+        <audio ref={victoryAudioRef} src="/audio/victory.mp3" muted={isMuted} />
 
         {showIntro && <IntroScreen startGame={() => setShowIntro(false)} />}
 
@@ -192,12 +240,16 @@ function App() {
               setIsMuted={setIsMuted}
               getRemainingCount={getRemainingCount}
               handleRestartGameClick={handleRestartGameClick}
+              currentTurn={currentTurn}
+              nextTurn={nextTurn}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              openMapModal={handleOpenMapWindow}
           />
-
           <GameBoard cards={cards} handleCardClick={handleCardClick} />
         </div>
 
-        {/* רכיבי פופ-אפ מנותקים */}
+        {/* מודאלים */}
         <VideoModal videoUrl={activeVideo?.videoUrl} onEnded={handleVideoEnd} />
         <ConfirmModal isOpen={confirmModal.isOpen} card={confirmModal.card} onConfirm={handleConfirmAction} />
         <AlertModal isOpen={alertModal.isOpen} text={alertModal.text} onClose={() => setAlertModal({ isOpen: false, text: '' })} />
@@ -207,6 +259,7 @@ function App() {
            onRestart={() => confirmRestartAction(true)} 
            onContinue={handleContinuePlaying} 
         />
+        
       </div>
   );
 }
